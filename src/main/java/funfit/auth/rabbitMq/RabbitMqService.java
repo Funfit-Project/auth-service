@@ -14,9 +14,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.MessageBuilder;
-import org.springframework.amqp.core.MessageProperties;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -26,47 +24,35 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class RabbitMqService {
 
-    private final RabbitTemplate rabbitTemplate;
     private final UserRepository userRepository;
     private final ObjectMapper mapper;
 
     @RabbitListener(queues = "request_user_by_email")
-    public Message onMessageInUserRequestByEmail(Message message) throws JsonProcessingException {
-        RequestUserByEmail dto = mapper.readValue(new String(message.getBody()), RequestUserByEmail.class);
-        log.info("RabbitMQ | on message in request_user_by_email, message = {}", dto.toString());
-        User user = userRepository.findByEmail(dto.getEmail())
+    public Message onMessageInUserRequestByEmail(RequestUserByEmail requestUserByEmail) throws JsonProcessingException {
+        log.info("RabbitMQ | on message in request_user_by_email, message = {}", requestUserByEmail.toString());
+        User user = userRepository.findByEmail(requestUserByEmail.getEmail())
                 .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_EMAIL));
         UserDto userDto = new UserDto(user.getId(), user.getEmail(), user.getPassword(), user.getEmail(), user.getRole().getName(), user.getPhoneNumber(), user.getUserCode());
 
-        MessageProperties properties = new MessageProperties();
-        properties.setContentType("application/json");
-        properties.setCorrelationId(message.getMessageProperties().getCorrelationId());
-
-        return MessageBuilder.withBody(mapper.writeValueAsString(userDto).getBytes())
-                .andProperties(properties)
+        return MessageBuilder
+                .withBody(mapper.writeValueAsString(userDto).getBytes())
                 .build();
     }
 
     @RabbitListener(queues = "request_validate_trainer_code")
-    public Message onMessageInRequestValidateTrainerCode(Message message) throws JsonProcessingException {
-        RequestValidateTrainerCode dto = mapper.readValue(new String(message.getBody()), RequestValidateTrainerCode.class);
-        Optional<User> optionalUser = userRepository.findByUserCode(dto.getTrainerCode());
+    public Message onMessageInRequestValidateTrainerCode(RequestValidateTrainerCode requestValidateTrainerCode) throws JsonProcessingException {
+        log.info("RabbitMQ | on message in request_validate_trainer_code, message = {}", requestValidateTrainerCode.toString());
+
+        Optional<User> optionalUser = userRepository.findByUserCode(requestValidateTrainerCode.getTrainerCode());
         if (optionalUser.isPresent()) {
             User user = optionalUser.get();
-            ResponseValidateTrainerCode response = new ResponseValidateTrainerCode(true, user.getId(), user.getName(), user.getUserCode());
-            MessageProperties properties = new MessageProperties();
-            properties.setContentType("application/json");
-            properties.setCorrelationId(message.getMessageProperties().getCorrelationId());
+            ResponseValidateTrainerCode response = new ResponseValidateTrainerCode(true, user.getId(), user.getName(), requestValidateTrainerCode.getTrainerCode());
             return MessageBuilder.withBody(mapper.writeValueAsString(response).getBytes())
-                    .andProperties(properties)
                     .build();
         } else {
-            ResponseValidateTrainerCode response = new ResponseValidateTrainerCode(false, -1, null, dto.getTrainerCode());
-            MessageProperties properties = new MessageProperties();
-            properties.setContentType("application/json");
-            properties.setCorrelationId(message.getMessageProperties().getCorrelationId());
-            return MessageBuilder.withBody(mapper.writeValueAsString(response).getBytes())
-                    .andProperties(properties)
+            ResponseValidateTrainerCode response = new ResponseValidateTrainerCode(false, -1, null, requestValidateTrainerCode.getTrainerCode());
+            return MessageBuilder
+                    .withBody(mapper.writeValueAsString(response).getBytes())
                     .build();
         }
     }
