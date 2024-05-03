@@ -2,11 +2,13 @@ package funfit.auth.user.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.ToString;
 
 import java.util.UUID;
 
 @Entity(name = "users")
 @Getter
+@ToString
 public class User {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)

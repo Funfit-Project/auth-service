@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ResponseValidateTrainerCode {
 
-    private boolean isExistTrainerCode;
+    private boolean result;
     private long trainerUserId;
     private String userName;
     private String trainerCode;
