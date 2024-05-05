@@ -1,6 +1,6 @@
 package funfit.auth.exception.utils;
 
-import funfit.auth.user.dto.JwtDto;
+import funfit.auth.user.dto.LoginResponse;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.HttpServletRequest;
@@ -25,10 +25,10 @@ public class JwtUtils {
         this.jwtParser = Jwts.parserBuilder().setSigningKey(signingKey).build();
     }
     
-    public JwtDto generateJwt(String email) {
+    public LoginResponse generateJwt(String email) {
         Claims claims = Jwts.claims()
                 .setSubject(email);
-        return new JwtDto(generateAccessToken(claims), generateRefreshToken(claims));
+        return new LoginResponse(generateAccessToken(claims), generateRefreshToken(claims));
     }
 
     private String generateAccessToken(Claims claims) {

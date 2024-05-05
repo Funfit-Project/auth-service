@@ -3,17 +3,19 @@ package funfit.auth.user.service;
 import funfit.auth.exception.ErrorCode;
 import funfit.auth.exception.customException.BusinessException;
 import funfit.auth.exception.utils.JwtUtils;
-import funfit.auth.user.dto.JoinRequest;
-import funfit.auth.user.dto.JoinResponse;
-import funfit.auth.user.dto.JwtDto;
-import funfit.auth.user.dto.LoginRequest;
+import funfit.auth.mypage.dto.EditUserInfoRequest;
+import funfit.auth.mypage.dto.ReadUserResponse;
+import funfit.auth.user.dto.*;
 import funfit.auth.user.entity.Role;
 import funfit.auth.user.entity.User;
 import funfit.auth.user.repository.UserRepository;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class UserService {
 
@@ -34,16 +36,33 @@ public class UserService {
         }
     }
 
-    public JwtDto login(LoginRequest loginRequest) {
+    public LoginResponse login(LoginRequest loginRequest) {
         validateEmailPassword(loginRequest);
         return jwtUtils.generateJwt(loginRequest.getEmail());
     }
 
     private void validateEmailPassword(LoginRequest loginRequest) {
-        User user = userRepository.findByEmail(loginRequest.getEmail())
-                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_EMAIL));
+        User user = findUser(loginRequest.getEmail());
         if (!user.getPassword().equals(loginRequest.getPassword())) {
             throw new BusinessException(ErrorCode.INVALID_PASSWORD);
         }
+    }
+
+    public ReadUserResponse readUserInfo(HttpServletRequest request) {
+        String email = jwtUtils.getEmailFromHeader(request);
+        User user = findUser(email);
+        return new ReadUserResponse(user);
+    }
+
+    public ReadUserResponse editUserInfo(EditUserInfoRequest dto, HttpServletRequest request) {
+        String email = jwtUtils.getEmailFromHeader(request);
+        User user = findUser(email);
+        user.editUserInfo(dto.getName());
+        return new ReadUserResponse(user);
+    }
+
+    private User findUser(String email) {
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_EMAIL));
     }
 }

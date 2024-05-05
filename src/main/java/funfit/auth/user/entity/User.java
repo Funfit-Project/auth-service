@@ -50,11 +50,7 @@ public class User {
         return uuid.toString().replace("-", "").substring(0, 8);
     }
 
-    public boolean isTrainer() {
-        return this.role == Role.TRAINER;
-    }
-
-    public boolean isMember() {
-        return this.role == Role.MEMBER;
+    public void editUserInfo(String name) {
+        this.name = name;
     }
 }

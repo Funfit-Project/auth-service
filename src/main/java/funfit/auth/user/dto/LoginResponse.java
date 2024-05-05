@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
-public class JwtDto {
+public class LoginResponse {
 
     private String accessToken;
     private String refreshToken;
