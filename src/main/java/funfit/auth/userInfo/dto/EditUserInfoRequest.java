@@ -1,14 +1,13 @@
-package funfit.auth.user.dto;
+package funfit.auth.userInfo.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+@Getter
 @NoArgsConstructor
 @AllArgsConstructor
-@Getter
-public class LoginResponse {
+public class EditUserInfoRequest {
 
-    private String accessToken;
-    private String refreshToken;
+    private String name;
 }

@@ -1,9 +1,10 @@
-package funfit.auth.mypage.controller;
+package funfit.auth.userInfo.controller;
 
+import funfit.auth.utils.JwtUtils;
 import funfit.auth.responseDto.SuccessResponse;
-import funfit.auth.mypage.dto.EditUserInfoRequest;
-import funfit.auth.mypage.dto.ReadUserResponse;
-import funfit.auth.user.service.UserService;
+import funfit.auth.userInfo.dto.EditUserInfoRequest;
+import funfit.auth.userInfo.dto.ReadUserResponse;
+import funfit.auth.userInfo.service.UserInfoService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -15,20 +16,21 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-public class MyPageController {
+public class UserInfoController {
 
-    private final UserService userService;
+    private final JwtUtils jwtUtils;
+    private final UserInfoService userInfoService;
 
     @GetMapping("/auth/mypage")
     public ResponseEntity readUserInfo(HttpServletRequest request) {
-        ReadUserResponse readUserResponse = userService.readUserInfo(request);
+        ReadUserResponse readUserResponse = userInfoService.readUserInfo(jwtUtils.getEmailFromHeader(request));
         return ResponseEntity.status(HttpStatus.OK)
                 .body(new SuccessResponse("회원 정보 조회 성공", readUserResponse));
     }
 
     @PutMapping("/auth/edit")
     public ResponseEntity editUserInfo(@RequestBody EditUserInfoRequest dto, HttpServletRequest request) {
-        ReadUserResponse readUserResponse = userService.editUserInfo(dto, request);
+        ReadUserResponse readUserResponse = userInfoService.editUserInfo(dto, jwtUtils.getEmailFromHeader(request));
         return ResponseEntity.status(HttpStatus.OK)
                 .body(new SuccessResponse("회원 정보 수정 성공", readUserResponse));
     }

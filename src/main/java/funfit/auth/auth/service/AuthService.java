@@ -1,16 +1,11 @@
-package funfit.auth.user.service;
+package funfit.auth.auth.service;
 
 import funfit.auth.exception.ErrorCode;
 import funfit.auth.exception.customException.BusinessException;
-import funfit.auth.exception.utils.JwtUtils;
-import funfit.auth.mypage.dto.EditUserInfoRequest;
-import funfit.auth.mypage.dto.ReadUserResponse;
-import funfit.auth.rabbitMq.RabbitMqService;
-import funfit.auth.user.dto.*;
-import funfit.auth.user.entity.Role;
-import funfit.auth.user.entity.User;
-import funfit.auth.user.repository.UserRepository;
-import jakarta.servlet.http.HttpServletRequest;
+import funfit.auth.auth.dto.*;
+import funfit.auth.auth.entity.Role;
+import funfit.auth.auth.entity.User;
+import funfit.auth.auth.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,11 +13,9 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional
 @RequiredArgsConstructor
-public class UserService {
+public class AuthService {
 
     private final UserRepository userRepository;
-    private final JwtUtils jwtUtils;
-    private final RabbitMqService rabbitMqService;
 
     public JoinResponse join(JoinRequest joinRequest) {
         validateDuplicate(joinRequest.getEmail());
@@ -40,7 +33,7 @@ public class UserService {
 
     public LoginResponse login(LoginRequest loginRequest) {
         validateEmailPassword(loginRequest);
-        return jwtUtils.generateJwt(loginRequest.getEmail());
+        return new LoginResponse(loginRequest.getEmail());
     }
 
     private void validateEmailPassword(LoginRequest loginRequest) {
@@ -48,21 +41,6 @@ public class UserService {
         if (!user.getPassword().equals(loginRequest.getPassword())) {
             throw new BusinessException(ErrorCode.INVALID_PASSWORD);
         }
-    }
-
-    public ReadUserResponse readUserInfo(HttpServletRequest request) {
-        String email = jwtUtils.getEmailFromHeader(request);
-        User user = findUser(email);
-        return new ReadUserResponse(user);
-    }
-
-    public ReadUserResponse editUserInfo(EditUserInfoRequest dto, HttpServletRequest request) {
-        String email = jwtUtils.getEmailFromHeader(request);
-        User user = findUser(email);
-        user.editUserInfo(dto.getName());
-
-        rabbitMqService.publishEditUserId(user.getId());
-        return new ReadUserResponse(user);
     }
 
     private User findUser(String email) {

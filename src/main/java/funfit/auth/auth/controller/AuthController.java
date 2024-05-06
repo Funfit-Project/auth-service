@@ -1,11 +1,9 @@
-package funfit.auth.user.controller;
+package funfit.auth.auth.controller;
 
+import funfit.auth.auth.dto.*;
+import funfit.auth.utils.JwtUtils;
 import funfit.auth.responseDto.SuccessResponse;
-import funfit.auth.user.dto.JoinRequest;
-import funfit.auth.user.dto.JoinResponse;
-import funfit.auth.user.dto.LoginResponse;
-import funfit.auth.user.dto.LoginRequest;
-import funfit.auth.user.service.UserService;
+import funfit.auth.auth.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,21 +13,23 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-public class LoginController {
+public class AuthController {
 
-    private final UserService userService;
+    private final AuthService authService;
+    private final JwtUtils jwtUtils;
 
     @PostMapping("/auth/join")
     public ResponseEntity join(@RequestBody JoinRequest joinRequest) {
-        JoinResponse joinResponse = userService.join(joinRequest);
+        JoinResponse joinResponse = authService.join(joinRequest);
         return ResponseEntity.status(HttpStatus.OK)
                         .body(new SuccessResponse("사용자 회원가입 성공", joinResponse));
     }
 
     @PostMapping("/auth/login")
     public ResponseEntity login(@RequestBody LoginRequest loginRequest) {
-        LoginResponse loginResponse = userService.login(loginRequest);
+        LoginResponse loginResponse = authService.login(loginRequest);
+        JwtDto jwtDto = jwtUtils.generateJwt(loginResponse.getEmail());
         return ResponseEntity.status(HttpStatus.OK)
-                .body(new SuccessResponse("사용자 로그인 성공", loginResponse));
+                .body(new SuccessResponse("사용자 로그인 성공", jwtDto));
     }
 }

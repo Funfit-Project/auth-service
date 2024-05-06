@@ -1,4 +1,4 @@
-package funfit.auth.user.entity;
+package funfit.auth.auth.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;

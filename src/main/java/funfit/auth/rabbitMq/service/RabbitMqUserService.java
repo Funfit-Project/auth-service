@@ -4,8 +4,8 @@ import funfit.auth.exception.ErrorCode;
 import funfit.auth.exception.customException.BusinessException;
 import funfit.auth.rabbitMq.dto.ResponseUserDtoForCommunity;
 import funfit.auth.rabbitMq.dto.ResponseUserDtoForPt;
-import funfit.auth.user.entity.User;
-import funfit.auth.user.repository.UserRepository;
+import funfit.auth.auth.entity.User;
+import funfit.auth.auth.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,13 +19,13 @@ public class RabbitMqUserService {
 
     public ResponseUserDtoForPt requestUserInfoFotPt(long userId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_EMAIL));
+                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_USER));
         return new ResponseUserDtoForPt(user.getId(), user.getEmail(), user.getName(), user.getRole().getName(), user.getPhoneNumber(), user.getUserCode());
     }
 
     public ResponseUserDtoForCommunity requestUserInfoFotCommunity(long userId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_EMAIL));
+                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_USER));
         return new ResponseUserDtoForCommunity(user.getId(), user.getEmail(), user.getName(), user.getRole().getName());
     }
 }

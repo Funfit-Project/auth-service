@@ -1,6 +1,6 @@
-package funfit.auth.exception.utils;
+package funfit.auth.utils;
 
-import funfit.auth.user.dto.LoginResponse;
+import funfit.auth.auth.dto.JwtDto;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.HttpServletRequest;
@@ -25,10 +25,10 @@ public class JwtUtils {
         this.jwtParser = Jwts.parserBuilder().setSigningKey(signingKey).build();
     }
     
-    public LoginResponse generateJwt(String email) {
+    public JwtDto generateJwt(String email) {
         Claims claims = Jwts.claims()
                 .setSubject(email);
-        return new LoginResponse(generateAccessToken(claims), generateRefreshToken(claims));
+        return new JwtDto(generateAccessToken(claims), generateRefreshToken(claims));
     }
 
     private String generateAccessToken(Claims claims) {
@@ -36,7 +36,7 @@ public class JwtUtils {
                 .setClaims(claims)
                 .setIssuedAt(Date.from(Instant.now()))
                 .setExpiration(Date.from(Instant.now().plusSeconds(60 * 60))) // 만료: 1시간
-                .signWith(SignatureAlgorithm.HS256, signingKey) // 사용할 암호화 알고리즘과 secret 값
+                .signWith(SignatureAlgorithm.HS256, signingKey)
                 .compact();
     }
 

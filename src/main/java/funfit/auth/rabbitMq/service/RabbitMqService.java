@@ -1,12 +1,12 @@
-package funfit.auth.rabbitMq;
+package funfit.auth.rabbitMq.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import funfit.auth.exception.ErrorCode;
 import funfit.auth.exception.customException.BusinessException;
 import funfit.auth.rabbitMq.dto.*;
-import funfit.auth.user.entity.User;
-import funfit.auth.user.repository.UserRepository;
+import funfit.auth.auth.entity.User;
+import funfit.auth.auth.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.Message;

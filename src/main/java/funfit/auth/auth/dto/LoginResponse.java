@@ -1,12 +1,13 @@
-package funfit.auth.user.dto;
+package funfit.auth.auth.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
+@AllArgsConstructor
 @Getter
-public class LoginRequest {
+public class LoginResponse {
 
     private String email;
-    private String password;
 }
