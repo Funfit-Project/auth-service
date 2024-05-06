@@ -5,6 +5,7 @@ import funfit.auth.exception.customException.BusinessException;
 import funfit.auth.exception.utils.JwtUtils;
 import funfit.auth.mypage.dto.EditUserInfoRequest;
 import funfit.auth.mypage.dto.ReadUserResponse;
+import funfit.auth.rabbitMq.RabbitMqService;
 import funfit.auth.user.dto.*;
 import funfit.auth.user.entity.Role;
 import funfit.auth.user.entity.User;
@@ -21,6 +22,7 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final JwtUtils jwtUtils;
+    private final RabbitMqService rabbitMqService;
 
     public JoinResponse join(JoinRequest joinRequest) {
         validateDuplicate(joinRequest.getEmail());
@@ -58,6 +60,8 @@ public class UserService {
         String email = jwtUtils.getEmailFromHeader(request);
         User user = findUser(email);
         user.editUserInfo(dto.getName());
+
+        rabbitMqService.publishEditUserId(user.getId());
         return new ReadUserResponse(user);
     }
 
