@@ -18,7 +18,9 @@ public enum ErrorCode {
     INVALID_REQUEST_SERVICE_NAME(HttpStatus.BAD_REQUEST, "잘못된 서비스명입니다."),
 
     // jwt
-    REQUIRED_JWT(HttpStatus.BAD_REQUEST, "토큰이 입력되지 않았습니다."),
+    EXPIRED_JWT(HttpStatus.BAD_REQUEST, "만료된 토큰입니다."),
+    INVALID_JWT(HttpStatus.BAD_REQUEST, "유효하지 않은 토큰입니다."),
+    REQUIRED_JWT(HttpStatus.BAD_REQUEST, "토큰이 입력되지 않았습니다.")
     ;
 
     private final HttpStatus httpStatus;

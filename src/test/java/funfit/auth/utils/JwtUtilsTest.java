@@ -3,6 +3,7 @@ package funfit.auth.utils;
 import funfit.auth.auth.dto.JwtDto;
 import funfit.auth.exception.ErrorCode;
 import funfit.auth.exception.customException.BusinessException;
+import funfit.auth.exception.customException.CustomJwtException;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -54,7 +55,7 @@ class JwtUtilsTest {
         MockHttpServletRequest request = new MockHttpServletRequest();
 
         // then
-        BusinessException exception = assertThrows(BusinessException.class, () -> {
+        CustomJwtException exception = assertThrows(CustomJwtException.class, () -> {
             jwtUtils.getEmailFromHeader(request);
         });
         Assertions.assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.REQUIRED_JWT);
