@@ -1,6 +1,8 @@
 package funfit.auth.utils;
 
 import funfit.auth.auth.dto.JwtDto;
+import funfit.auth.exception.ErrorCode;
+import funfit.auth.exception.customException.BusinessException;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.HttpServletRequest;
@@ -59,6 +61,6 @@ public class JwtUtils {
         if (header != null && header.startsWith("Bearer ")) {
             return header.split(" ")[1];
         }
-        return null;
+        throw new BusinessException(ErrorCode.REQUIRED_JWT);
     }
 }

@@ -46,7 +46,7 @@ public class RabbitMqService {
                     .build();
         }
 
-        throw new RuntimeException("RabbitMQ 오류 발생");
+        throw new BusinessException(ErrorCode.INVALID_REQUEST_SERVICE_NAME);
     }
 
     @RabbitListener(queues = "request_validate_trainer_code")

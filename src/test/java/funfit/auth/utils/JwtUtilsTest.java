@@ -1,6 +1,8 @@
 package funfit.auth.utils;
 
 import funfit.auth.auth.dto.JwtDto;
+import funfit.auth.exception.ErrorCode;
+import funfit.auth.exception.customException.BusinessException;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -8,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.transaction.annotation.Transactional;
+
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest
 @Transactional
@@ -41,5 +45,18 @@ class JwtUtilsTest {
         // then
         String email = jwtUtils.getEmailFromHeader(request);
         Assertions.assertThat(email).isEqualTo("user@naver.com");
+    }
+
+    @Test
+    @DisplayName("HTTP 요청 헤더에서 이메일 추출 실패-토큰 누락")
+    public void getEmailFromHeaderFail() {
+        // given
+        MockHttpServletRequest request = new MockHttpServletRequest();
+
+        // then
+        BusinessException exception = assertThrows(BusinessException.class, () -> {
+            jwtUtils.getEmailFromHeader(request);
+        });
+        Assertions.assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.REQUIRED_JWT);
     }
 }

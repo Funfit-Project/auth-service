@@ -52,9 +52,9 @@ class UserInfoServiceTest {
         EditUserInfoRequest editUserInfoRequest = new EditUserInfoRequest("editedName");
         ReadUserResponse readUserResponse = userInfoService.editUserInfo(editUserInfoRequest, email);
 
+        // then
         User user = userRepository.findByEmail(email).get();
 
-        // then
         Assertions.assertThat(readUserResponse.getId()).isEqualTo(user.getId());
         Assertions.assertThat(readUserResponse.getEmail()).isEqualTo(user.getEmail());
         Assertions.assertThat(readUserResponse.getName()).isEqualTo(user.getName());
