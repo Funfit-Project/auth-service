@@ -31,7 +31,7 @@ class RabbitMqUserServiceTest {
 
     @BeforeEach
     public void init() {
-        em.createNativeQuery("alter table users auto_increment = 1;")
+        em.createNativeQuery("alter table users alter column user_id restart with 1;")
                 .executeUpdate();
 
         User user = User.create("user@naver.com", "1234", "user", Role.MEMBER, "01012345678");
