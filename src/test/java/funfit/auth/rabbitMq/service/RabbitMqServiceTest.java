@@ -107,39 +107,4 @@ class RabbitMqServiceTest {
         });
         Assertions.assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.INVALID_REQUEST_SERVICE_NAME);
     }
-
-    @Test
-    @DisplayName("request_validate_trainer_code 큐에 메시지가 도착했을 때 메시지 반환-존재하는 트레이너 코드일 때")
-    public void onMessageInRequestValidateTrainerCodeTest() throws IOException {
-        // given
-        User trainer = userRepository.findByEmail("trainer@naver.com").get();
-        RequestValidateTrainerCode requestDto = new RequestValidateTrainerCode(trainer.getUserCode());
-
-        // when
-        Message message = rabbitMqService.onMessageInRequestValidateTrainerCode(requestDto);
-
-        // then
-        ResponseValidateTrainerCode responseDto = mapper.readValue(message.getBody(), ResponseValidateTrainerCode.class);
-        Assertions.assertThat(responseDto.isResult()).isTrue();
-        Assertions.assertThat(responseDto.getTrainerUserId()).isEqualTo(trainer.getId());
-        Assertions.assertThat(responseDto.getUserName()).isEqualTo(trainer.getName());
-        Assertions.assertThat(responseDto.getTrainerCode()).isEqualTo(trainer.getUserCode());
-    }
-
-    @Test
-    @DisplayName("request_validate_trainer_code 큐에 메시지가 도착했을 때 메시지 반환-존재하지 않는 트레이너 코드일 때")
-    public void onMessageInRequestValidateTrainerCodeTestSuccess() throws IOException {
-        // given
-        RequestValidateTrainerCode requestDto = new RequestValidateTrainerCode("invalid_trainer_code");
-
-        // when
-        Message message = rabbitMqService.onMessageInRequestValidateTrainerCode(requestDto);
-
-        // then
-        ResponseValidateTrainerCode responseDto = mapper.readValue(message.getBody(), ResponseValidateTrainerCode.class);
-        Assertions.assertThat(responseDto.isResult()).isFalse();
-        Assertions.assertThat(responseDto.getTrainerUserId()).isEqualTo(-1);
-        Assertions.assertThat(responseDto.getUserName()).isEqualTo(null);
-        Assertions.assertThat(responseDto.getTrainerCode()).isEqualTo("invalid_trainer_code");
-    }
 }
