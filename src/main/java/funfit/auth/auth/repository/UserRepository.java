@@ -1,6 +1,6 @@
-package funfit.auth.user.repository;
+package funfit.auth.auth.repository;
 
-import funfit.auth.user.entity.User;
+import funfit.auth.auth.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

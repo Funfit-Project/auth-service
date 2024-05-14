@@ -9,8 +9,10 @@ import lombok.ToString;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public class RequestUserByEmail {
+public class ResponseUserDtoForCommunity {
 
+    private long userId;
     private String email;
-    private String requestServiceName;
+    private String userName;
+    private String roleName;
 }

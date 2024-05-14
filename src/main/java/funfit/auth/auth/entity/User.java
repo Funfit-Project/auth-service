@@ -1,12 +1,14 @@
-package funfit.auth.user.entity;
+package funfit.auth.auth.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.ToString;
 
 import java.util.UUID;
 
 @Entity(name = "users")
 @Getter
+@ToString
 public class User {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -48,11 +50,7 @@ public class User {
         return uuid.toString().replace("-", "").substring(0, 8);
     }
 
-    public boolean isTrainer() {
-        return this.role == Role.TRAINER;
-    }
-
-    public boolean isMember() {
-        return this.role == Role.MEMBER;
+    public void editUserInfo(String name) {
+        this.name = name;
     }
 }

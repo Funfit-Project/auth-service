@@ -1,15 +1,13 @@
-package funfit.auth.user.dto;
+package funfit.auth.userInfo.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+@Getter
 @NoArgsConstructor
 @AllArgsConstructor
-@Getter
-public class JoinResponse {
+public class EditUserInfoRequest {
 
-    private String email;
     private String name;
-    private String role;
 }

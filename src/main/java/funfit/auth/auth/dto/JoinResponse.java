@@ -1,16 +1,15 @@
-package funfit.auth.rabbitMq.dto;
+package funfit.auth.auth.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 
-@Getter
-@ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public class RequestUserByEmail {
+@Getter
+public class JoinResponse {
 
     private String email;
-    private String requestServiceName;
+    private String name;
+    private String role;
 }

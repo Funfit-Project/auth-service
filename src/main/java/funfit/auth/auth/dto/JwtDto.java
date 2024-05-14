@@ -1,12 +1,12 @@
-package funfit.auth.user.dto;
+package funfit.auth.auth.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@NoArgsConstructor
-@AllArgsConstructor
 @Getter
+@AllArgsConstructor
+@NoArgsConstructor
 public class JwtDto {
 
     private String accessToken;

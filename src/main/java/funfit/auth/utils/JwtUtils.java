@@ -1,6 +1,8 @@
-package funfit.auth.exception.utils;
+package funfit.auth.utils;
 
-import funfit.auth.user.dto.JwtDto;
+import funfit.auth.auth.dto.JwtDto;
+import funfit.auth.exception.ErrorCode;
+import funfit.auth.exception.customException.CustomJwtException;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.HttpServletRequest;
@@ -36,7 +38,7 @@ public class JwtUtils {
                 .setClaims(claims)
                 .setIssuedAt(Date.from(Instant.now()))
                 .setExpiration(Date.from(Instant.now().plusSeconds(60 * 60))) // 만료: 1시간
-                .signWith(SignatureAlgorithm.HS256, signingKey) // 사용할 암호화 알고리즘과 secret 값
+                .signWith(SignatureAlgorithm.HS256, signingKey)
                 .compact();
     }
 
@@ -51,7 +53,13 @@ public class JwtUtils {
 
     public String getEmailFromHeader(HttpServletRequest request) {
         String jwt = getJwtFromHeader(request);
-        return jwtParser.parseClaimsJws(jwt).getBody().getSubject();
+        try {
+            return jwtParser.parseClaimsJws(jwt).getBody().getSubject();
+        } catch (ExpiredJwtException e) {
+            throw new CustomJwtException(ErrorCode.EXPIRED_JWT);
+        } catch (JwtException e) {
+            throw new CustomJwtException(ErrorCode.INVALID_JWT);
+        }
     }
 
     private String getJwtFromHeader(HttpServletRequest request) {
@@ -59,6 +67,6 @@ public class JwtUtils {
         if (header != null && header.startsWith("Bearer ")) {
             return header.split(" ")[1];
         }
-        return null;
+        throw new CustomJwtException(ErrorCode.REQUIRED_JWT);
     }
 }
