@@ -11,6 +11,8 @@ import lombok.ToString;
 @AllArgsConstructor
 public class ResponseUserDtoForCommunity {
 
+//    private boolean isSuccess;
+
     private long userId;
     private String email;
     private String userName;

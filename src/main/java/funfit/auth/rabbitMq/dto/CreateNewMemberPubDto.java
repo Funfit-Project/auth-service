@@ -2,13 +2,15 @@ package funfit.auth.rabbitMq.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.ToString;
 
 @AllArgsConstructor
+@ToString
 @Getter
 public class CreateNewMemberPubDto {
 
-    private long memberId;
-    private long trainerId;
+    private String memberEmail;
+    private String trainerEmail;
     private String centerName;
     private int registrationCount;
 }

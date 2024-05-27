@@ -1,5 +1,6 @@
 package funfit.auth.rabbitMq.dto;
 
+import funfit.auth.MicroServiceName;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,5 +13,5 @@ import lombok.ToString;
 public class RequestUserByEmail {
 
     private String email;
-    private String requestServiceName;
+    private MicroServiceName serviceName;
 }

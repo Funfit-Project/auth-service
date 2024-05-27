@@ -36,7 +36,7 @@ public class AuthService {
 
         if (role == Role.MEMBER) {
             User trainer = validateUserCode(joinRequest.getUserCode());
-            rabbitMqService.publishCreateNewMember(new CreateNewMemberPubDto(user.getId(), trainer.getId(), joinRequest.getCenterName(), joinRequest.getRegistrationCount()));
+            rabbitMqService.publishCreateNewMember(new CreateNewMemberPubDto(user.getEmail(), trainer.getEmail(), joinRequest.getCenterName(), joinRequest.getRegistrationCount()));
             return new JoinResponse(user.getEmail(), user.getName(), user.getRole().getName(), trainer.getName(), joinRequest.getCenterName(), joinRequest.getRegistrationCount());
         }
 
