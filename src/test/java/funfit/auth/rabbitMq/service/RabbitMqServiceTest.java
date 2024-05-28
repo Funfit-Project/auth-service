@@ -1,6 +1,7 @@
 package funfit.auth.rabbitMq.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import funfit.auth.MicroServiceName;
 import funfit.auth.auth.entity.Role;
 import funfit.auth.auth.entity.User;
 import funfit.auth.auth.repository.UserRepository;
@@ -46,7 +47,7 @@ class RabbitMqServiceTest {
     @DisplayName("user_request_by_email 큐에 메시지가 도착했을 때 메시지 반환 성공-pt 서비스")
     public void onMessageInUserRequestByEmailTesSuccessFotPt() throws IOException {
         // given
-        RequestUserByEmail requestDto = new RequestUserByEmail("member@naver.com", "pt");
+        RequestUserByEmail requestDto = new RequestUserByEmail("member@naver.com", MicroServiceName.PT);
 
         // when
         Message message = rabbitMqService.onMessageInUserRequestByEmail(requestDto);
@@ -67,7 +68,7 @@ class RabbitMqServiceTest {
     @DisplayName("user_request_by_email 큐에 메시지가 도착했을 때 메시지 반환 성공-community 서비스")
     public void onMessageInUserRequestByEmailTestSuccessForCommunity() throws IOException {
         // given
-        RequestUserByEmail requestDto = new RequestUserByEmail("member@naver.com", "community");
+        RequestUserByEmail requestDto = new RequestUserByEmail("member@naver.com", MicroServiceName.COMMUNITY);
 
         // when
         Message message = rabbitMqService.onMessageInUserRequestByEmail(requestDto);
@@ -86,25 +87,12 @@ class RabbitMqServiceTest {
     @DisplayName("user_request_by_email 큐에 메시지가 도착했을 때 메시지 반환 실패-존재하지 않는 이메일")
     public void onMessageInUserRequestByEmailTestFailByInvalidEmail() {
         // given
-        RequestUserByEmail requestDto = new RequestUserByEmail("memberr@naver.com", "pt");
+        RequestUserByEmail requestDto = new RequestUserByEmail("memberr@naver.com", MicroServiceName.PT);
 
         // then
         BusinessException exception = assertThrows(BusinessException.class, () -> {
             rabbitMqService.onMessageInUserRequestByEmail(requestDto);
         });
         Assertions.assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.NOT_FOUND_EMAIL);
-    }
-
-    @Test
-    @DisplayName("user_request_by_email 큐에 메시지가 도착했을 때 메시지 반환 실패-존재하지 않는 서비스명")
-    public void onMessageInUserRequestByEmailTestFailByInvalidRequestServiceName() {
-        // given
-        RequestUserByEmail requestDto = new RequestUserByEmail("member@naver.com", "ptt");
-
-        // then
-        BusinessException exception = assertThrows(BusinessException.class, () -> {
-            rabbitMqService.onMessageInUserRequestByEmail(requestDto);
-        });
-        Assertions.assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.INVALID_REQUEST_SERVICE_NAME);
     }
 }
