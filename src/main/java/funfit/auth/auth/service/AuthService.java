@@ -29,18 +29,14 @@ public class AuthService {
 
         if (role == Role.MEMBER) {
             validateRequiredData(joinRequest);
-            validateUserCode(joinRequest.getUserCode());
-        }
-
-        userRepository.save(user);
-
-        if (role == Role.MEMBER) {
             User trainer = validateUserCode(joinRequest.getUserCode());
+            userRepository.save(user);
             rabbitMqService.publishCreateNewMember(new CreateNewMemberPubDto(user.getEmail(), trainer.getEmail(), joinRequest.getCenterName(), joinRequest.getRegistrationCount()));
             return new JoinResponse(user.getEmail(), user.getName(), user.getRole().getName(), trainer.getName(), joinRequest.getCenterName(), joinRequest.getRegistrationCount());
+        } else {
+            userRepository.save(user);
+            return new JoinResponse(user.getEmail(), user.getName(), user.getRole().getName(), null, null, null);
         }
-
-        return new JoinResponse(user.getEmail(), user.getName(), user.getRole().getName(), null, null, null);
     }
 
     private void validateDuplicatedEmail(String email) {
