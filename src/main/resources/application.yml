@@ -1,4 +1,16 @@
+server:
+  port: 8081
+
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://eureka-discovery:8761/eureka
+
 spring:
+  application:
+    name: auth-service
   datasource:
     url: ${DATASOURCE_URL}
     username: ${DATASOURCE_USERNAME}
@@ -15,12 +27,14 @@ spring:
     port: 5672
     username: guest
     password: guest
+
 logging:
   level:
     org:
       hibernate.SQL: debug
 jwt:
   secret: ${JWT_SECRET}
+
 springdoc:
   packages-to-scan: funfit.auth
   default-consumes-media-type: application/json;charset=UTF-8
