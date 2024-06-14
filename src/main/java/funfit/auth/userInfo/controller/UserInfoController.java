@@ -1,5 +1,6 @@
 package funfit.auth.userInfo.controller;
 
+import funfit.auth.rabbitMq.service.RabbitMqService;
 import funfit.auth.utils.JwtUtils;
 import funfit.auth.responseDto.SuccessResponse;
 import funfit.auth.userInfo.dto.EditUserInfoRequest;
@@ -20,6 +21,8 @@ public class UserInfoController {
 
     private final JwtUtils jwtUtils;
     private final UserInfoService userInfoService;
+    private final RabbitMqService rabbitMqService;
+
 
     @GetMapping("/auth/mypage")
     public ResponseEntity readUserInfo(HttpServletRequest request) {
@@ -31,6 +34,8 @@ public class UserInfoController {
     @PutMapping("/auth/edit")
     public ResponseEntity editUserInfo(@RequestBody EditUserInfoRequest dto, HttpServletRequest request) {
         ReadUserResponse readUserResponse = userInfoService.editUserInfo(dto, jwtUtils.getEmailFromHeader(request));
+        rabbitMqService.publishEditedUserEmail(readUserResponse.getEmail());
+
         return ResponseEntity.status(HttpStatus.OK)
                 .body(new SuccessResponse("회원 정보 수정 성공", readUserResponse));
     }

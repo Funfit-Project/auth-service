@@ -1,6 +1,5 @@
 package funfit.auth.userInfo.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import funfit.auth.auth.entity.Role;
 import funfit.auth.auth.entity.User;
 import funfit.auth.auth.repository.UserRepository;
@@ -23,15 +22,12 @@ class UserInfoServiceTest {
     private UserRepository userRepository;
 
     @Autowired
-    private ObjectMapper mapper;
-
-    @Autowired
     private RabbitTemplate rabbitTemplate;
 
     @Test
     @DisplayName("사용자 정보 조회 성공")
     public void readUserInfoSuccess() {
-        UserInfoService userInfoService = new UserInfoService(userRepository, new StubRabbitMqService(userRepository, mapper, rabbitTemplate));
+        UserInfoService userInfoService = new UserInfoService(userRepository, new StubRabbitMqService(rabbitTemplate));
 
         // given
         String email = "user@naver.com";
@@ -53,7 +49,7 @@ class UserInfoServiceTest {
     @Test
     @DisplayName("사용자 정보 수정 성공")
     public void editUserInfoSuccess() {
-        UserInfoService userInfoService = new UserInfoService(userRepository, new StubRabbitMqService(userRepository, mapper, rabbitTemplate));
+        UserInfoService userInfoService = new UserInfoService(userRepository, new StubRabbitMqService(rabbitTemplate));
 
         // given
         String email = "user@naver.com";
@@ -76,12 +72,12 @@ class UserInfoServiceTest {
 
     class StubRabbitMqService extends RabbitMqService {
 
-        public StubRabbitMqService(UserRepository userRepository, ObjectMapper mapper, RabbitTemplate rabbitTemplate) {
-            super(userRepository, mapper, rabbitTemplate);
+        public StubRabbitMqService(RabbitTemplate rabbitTemplate) {
+            super(rabbitTemplate);
         }
 
         @Override
-        public void publishEditUserId(long userId) {
+        public void publishEditedUserEmail(String email) {
         }
     }
 }

@@ -1,6 +1,5 @@
 package funfit.auth.auth.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import funfit.auth.exception.ErrorCode;
 import funfit.auth.exception.customException.BusinessException;
 import funfit.auth.auth.dto.JoinRequest;
@@ -28,19 +27,18 @@ import static org.junit.jupiter.api.Assertions.*;
 class AuthServiceTest {
 
     @Autowired private UserRepository userRepository;
-    @Autowired private ObjectMapper mapper;
     @Autowired private RabbitTemplate rabbitTemplate;
     private AuthService authService;
 
     @BeforeEach
     void setup() {
-        authService = new AuthService(userRepository, new RabbitMqServiceStub(userRepository, mapper, rabbitTemplate));
+        authService = new AuthService(userRepository, new RabbitMqServiceStub(rabbitTemplate));
     }
 
     class RabbitMqServiceStub extends RabbitMqService {
 
-        public RabbitMqServiceStub(UserRepository userRepository, ObjectMapper mapper, RabbitTemplate rabbitTemplate) {
-            super(userRepository, mapper, rabbitTemplate);
+        public RabbitMqServiceStub(RabbitTemplate rabbitTemplate) {
+            super(rabbitTemplate);
         }
 
         @Override

@@ -4,7 +4,6 @@ import funfit.auth.auth.entity.User;
 import funfit.auth.auth.repository.UserRepository;
 import funfit.auth.exception.ErrorCode;
 import funfit.auth.exception.customException.BusinessException;
-import funfit.auth.rabbitMq.service.RabbitMqService;
 import funfit.auth.userInfo.dto.EditUserInfoRequest;
 import funfit.auth.userInfo.dto.ReadUserResponse;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +16,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserInfoService {
 
     private final UserRepository userRepository;
-    private final RabbitMqService rabbitMqService;
 
     public ReadUserResponse readUserInfo(String email) {
         User user = findUser(email);
@@ -27,8 +25,6 @@ public class UserInfoService {
     public ReadUserResponse editUserInfo(EditUserInfoRequest dto, String email) {
         User user = findUser(email);
         user.editUserInfo(dto.getName());
-
-        rabbitMqService.publishEditUserId(user.getId());
         return new ReadUserResponse(user);
     }
 
