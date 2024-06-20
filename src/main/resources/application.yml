@@ -12,8 +12,8 @@ spring:
   application:
     name: auth-service
   datasource:
-    url: ${DATASOURCE_URL}
-    username: ${DATASOURCE_USERNAME}
+    url: jdbc:mysql://auth_mysql:3306/auth?useSSL=false&allowPublicKeyRetrieval=true
+    username: root
     password: ${DATASOURCE_PASSWORD}
   jpa:
     hibernate:
@@ -27,6 +27,7 @@ spring:
     port: 5672
     username: guest
     password: guest
+    exchange: funfit
 
 logging:
   level:
