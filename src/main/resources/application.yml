@@ -14,7 +14,7 @@ spring:
   datasource:
     url: jdbc:mysql://auth_mysql:3306/auth?useSSL=false&allowPublicKeyRetrieval=true
     username: root
-    password: thgml0108^^*! # ${DATASOURCE_PASSWORD}
+    password: ${DATASOURCE_PASSWORD}
   jpa:
     hibernate:
       ddl-auto: create
@@ -34,14 +34,19 @@ logging:
     org:
       hibernate.SQL: debug
 jwt:
-  secret: flwkegnwoirgnoaeringaleriknglakernglekrng # ${JWT_SECRET}
+  secret: ${JWT_SECRET}
 
 springdoc:
+  api-docs:
+    enabled: true
   packages-to-scan: funfit.auth
   default-consumes-media-type: application/json;charset=UTF-8
   default-produces-media-type: application/json;charset=UTF-8
   swagger-ui:
-    path: /
     disable-swagger-default-url: true
     display-request-duration: true
     operations-sorter: alph
+
+openapi:
+  service:
+    url: http://gateway-service:8080
