@@ -1,4 +1,4 @@
-package funfit.auth.rabbitMq.dto;
+package funfit.auth.api.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,8 +9,12 @@ import lombok.ToString;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public class RequestUserByEmail {
+public class ResponseUserDtoForCommunity {
 
+//    private boolean isSuccess;
+
+    private long userId;
     private String email;
-    private String requestServiceName;
+    private String userName;
+    private String roleName;
 }

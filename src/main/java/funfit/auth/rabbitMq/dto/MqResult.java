@@ -3,14 +3,14 @@ package funfit.auth.rabbitMq.dto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.http.HttpStatus;
 
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class ResponseValidateTrainerCode {
+public class MqResult<T> {
 
-    private boolean result;
-    private long trainerUserId;
-    private String userName;
-    private String trainerCode;
+    private boolean success;
+    private HttpStatus httpStatus;
+    private T result;
 }

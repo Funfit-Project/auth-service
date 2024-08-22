@@ -18,14 +18,14 @@ public class AuthController {
     private final AuthService authService;
     private final JwtUtils jwtUtils;
 
-    @PostMapping("/auth/join")
+    @PostMapping("/join")
     public ResponseEntity join(@RequestBody JoinRequest joinRequest) {
         JoinResponse joinResponse = authService.join(joinRequest);
         return ResponseEntity.status(HttpStatus.OK)
                         .body(new SuccessResponse("사용자 회원가입 성공", joinResponse));
     }
 
-    @PostMapping("/auth/login")
+    @PostMapping("/login")
     public ResponseEntity login(@RequestBody LoginRequest loginRequest) {
         LoginResponse loginResponse = authService.login(loginRequest);
         JwtDto jwtDto = jwtUtils.generateJwt(loginResponse.getEmail());

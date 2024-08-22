@@ -1,7 +1,19 @@
+server:
+  port: 8081
+
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://eureka-discovery:8761/eureka
+
 spring:
+  application:
+    name: auth-service
   datasource:
-    url: ${DATASOURCE_URL}
-    username: ${DATASOURCE_USERNAME}
+    url: jdbc:mysql://auth_mysql:3306/auth?useSSL=false&allowPublicKeyRetrieval=true
+    username: root
     password: ${DATASOURCE_PASSWORD}
   jpa:
     hibernate:
@@ -11,22 +23,30 @@ spring:
         dialect: org.hibernate.dialect.MySQLDialect
         format_sql: true
   rabbitmq:
-    host: localhost
+    host: rabbitmq
     port: 5672
     username: guest
     password: guest
+    exchange: funfit
+
 logging:
   level:
     org:
       hibernate.SQL: debug
 jwt:
   secret: ${JWT_SECRET}
+
 springdoc:
+  api-docs:
+    enabled: true
   packages-to-scan: funfit.auth
   default-consumes-media-type: application/json;charset=UTF-8
   default-produces-media-type: application/json;charset=UTF-8
   swagger-ui:
-    path: /
     disable-swagger-default-url: true
     display-request-duration: true
     operations-sorter: alph
+
+openapi:
+  service:
+    url: http://gateway-service:8080

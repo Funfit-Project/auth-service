@@ -12,4 +12,7 @@ public class JoinResponse {
     private String email;
     private String name;
     private String role;
+    private String trainerName;
+    private String centerName;
+    private Integer registrationCount;
 }
