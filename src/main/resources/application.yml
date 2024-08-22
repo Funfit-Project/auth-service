@@ -22,12 +22,12 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.MySQLDialect
         format_sql: true
-#  rabbitmq:
-#    host: rabbitmq
-#    port: 5672
-#    username: guest
-#    password: guest
-#    exchange: funfit
+  rabbitmq:
+    host: rabbitmq
+    port: 5672
+    username: guest
+    password: guest
+    exchange: funfit
 
 logging:
   level:
