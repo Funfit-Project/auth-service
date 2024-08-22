@@ -58,6 +58,6 @@ jobs:
           script: |
             sudo docker pull ${{ secrets.DOCKER_USERNAME }}/funfit_auth
             docker rm -f $(docker ps -qa)
-            docker run -d --name funfit_auth -p 8080:8080 ${{ secrets.DOCKER_USERNAME }}/funfit_auth:latest
-            docker run --name rabbitmq -p 5672:5672 -p 15672:15672 -d rabbitmq:management
+            docker run -d --name funfit_auth -p ${{ secrets.EC2_PORT }}:${{ secrets.EC2_PORT }} ${{ secrets.DOCKER_USERNAME }}/funfit_auth:latest
+#            docker run --name rabbitmq -p 5672:5672 -p 15672:15672 -d rabbitmq:management
 
