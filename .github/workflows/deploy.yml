@@ -36,7 +36,6 @@ jobs:
         run: |
           chmod +x ./gradlew
           ./gradlew build -x test
-
       - name: docker login
         uses: docker/login-action@v2
         with:
@@ -47,18 +46,14 @@ jobs:
         run: |
           docker build -t ${{ secrets.DOCKER_USERNAME }}/funfit_auth .
           docker push ${{ secrets.DOCKER_USERNAME }}/funfit_auth
-
       - name: deploy to EC2
-        uses: appleboy/ssh-action@v0.1.6
+        uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ubuntu
-          port: 22
           key: ${{ secrets.EC2_PRIVATE_KEY }}
           script: |
-            sudo chmod 666 /var/run/docker.sock
             sudo docker pull ${{ secrets.DOCKER_USERNAME }}/funfit_auth
             docker rm -f $(docker ps -qa)
-            docker run -d --name funfit_auth -p 80:8080 ${{ secrets.DOCKER_USERNAME }}/funfit_auth:latest
-#            docker run --name rabbitmq -p 5672:5672 -p 15672:15672 -d rabbitmq:management
-
+            docker run -d --name funfit_auth -p 8080:8080 ${{ secrets.DOCKER_USERNAME }}/funfit_auth:latest
+            docker run --name rabbitmq -p 5672:5672 -p 15672:15672 -d rabbitmq:management
