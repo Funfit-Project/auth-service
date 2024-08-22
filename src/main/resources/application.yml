@@ -49,4 +49,4 @@ springdoc:
 
 openapi:
   service:
-    url: http://gateway-service:8080
+    url: http://gateway-service:80
