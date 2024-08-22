@@ -26,12 +26,12 @@ jobs:
         with:
           files: ./src/main/resources/application.yml
         env:
+          eureka.client.service-url: ${{ secrets.DISCOVERY_URL }}
           spring.datasource.url: ${{ secrets.DATASOURCE_URL }}
           spring.datasource.username: ${{ secrets.DATASOURCE_USERNAME }}
           spring.datasource.password: ${{ secrets.DATASOURCE_PASSWORD }}
           spring.rabbitmq.host: ${{ secrets.EC2_HOST }}
           jwt.secret: ${{ secrets.JWT_SECRET }}
-
       - name: build with gradle
         run: |
           chmod +x ./gradlew
