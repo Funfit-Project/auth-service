@@ -53,8 +53,10 @@ jobs:
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ubuntu
+          port: 22
           key: ${{ secrets.EC2_PRIVATE_KEY }}
           script: |
+            sudo chmod 666 /var/run/docker.sock
             sudo docker pull ${{ secrets.DOCKER_USERNAME }}/funfit_auth
             docker rm -f $(docker ps -qa)
             docker run -d --name funfit_auth -p 80:8080 ${{ secrets.DOCKER_USERNAME }}/funfit_auth:latest
