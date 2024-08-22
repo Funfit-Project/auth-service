@@ -1,5 +1,5 @@
 server:
-  port: 8081
+  port: 8080
 
 eureka:
   client:
@@ -12,8 +12,8 @@ spring:
   application:
     name: auth-service
   datasource:
-    url: jdbc:mysql://auth_mysql:3306/auth?useSSL=false&allowPublicKeyRetrieval=true
-    username: root
+    url: ${DATASOURCE_URL}
+    username: ${DATASOURCE_USERNAME}
     password: ${DATASOURCE_PASSWORD}
   jpa:
     hibernate:
@@ -49,4 +49,4 @@ springdoc:
 
 openapi:
   service:
-    url: http://gateway-service:8080
+    url: http://gateway-service:80
