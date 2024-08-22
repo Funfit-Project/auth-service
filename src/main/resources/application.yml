@@ -1,5 +1,5 @@
 server:
-  port: ${EC2_PORT}
+  port: 8080
 
 eureka:
   client:
