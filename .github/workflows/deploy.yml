@@ -56,8 +56,11 @@ jobs:
           key: ${{ secrets.EC2_PRIVATE_KEY }} # SSH Private Key (PEM 형식으로 GitHub Secrets에 저장)
           port: 22
           script: |
+            # SSH 키 파일 생성 (Public EC2에서 사용할 키)
+            echo "${{ secrets.EC2_PRIVATE_KEY }}" > ~/private_key.pem
+            chmod 600 ~/private_key.pem
             # Public EC2에서 Private EC2로 SSH 접속
-            ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ec2-user@${{ secrets.EC2_HOST }} << 'EOF'
+            ssh -o StrictHostKeyChecking=no -i ~/private_key.pem ec2-user@${{ secrets.EC2_HOST }} << 'EOF'
               # Docker pull 명령어로 이미지 가져오기
               sudo docker pull ${{ secrets.DOCKER_USERNAME }}/funfit_auth
             
