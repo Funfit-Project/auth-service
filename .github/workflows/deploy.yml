@@ -31,10 +31,12 @@ jobs:
           spring.datasource.password: ${{ secrets.DATASOURCE_PASSWORD }}
           spring.rabbitmq.host: ${{ secrets.EC2_HOST }}
           jwt.secret: ${{ secrets.JWT_SECRET }}
+
       - name: build with gradle
         run: |
           chmod +x ./gradlew
           ./gradlew build -x test
+
       - name: docker login
         uses: docker/login-action@v2
         with:
@@ -51,26 +53,27 @@ jobs:
           mkdir -p ~/.ssh
           echo "${{ secrets.EC2_PRIVATE_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
+          
+          # Add host keys to known_hosts
           ssh-keyscan -H ${{ secrets.PUBLIC_EC2_HOST }} >> ~/.ssh/known_hosts
           ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
 
       - name: Deploy to Private EC2 via Public EC2
         run: |
-          ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ubuntu@${{ secrets.PUBLIC_EC2_HOST }} << 'EOF'
-            ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ubuntu@${{ secrets.EC2_HOST }} << 'ENDSSH'
-              sudo docker pull ${{ secrets.DOCKER_USERNAME }}/funfit_auth
-
-              existing_container=$(docker ps -q -f name=funfit_auth)
-              if [ -n "$existing_container" ]; then
-                docker rm -f $existing_container
-              fi
-
-              docker run -d --name funfit_auth -p 8080:8080 ${{ secrets.DOCKER_USERNAME }}/funfit_auth:latest
-              docker run --name rabbitmq -p 5672:5672 -p 15672:15672 -d rabbitmq:management
-            ENDSSH
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa -o ProxyCommand="ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa -W %h:%p ubuntu@${{ secrets.PUBLIC_EC2_HOST }}" ubuntu@${{ secrets.EC2_HOST }} << 'EOF'}} << 'EOF'
+          
+          sudo docker pull ${{ secrets.DOCKER_USERNAME }}/funfit_auth
+          
+          existing_container=$(docker ps -q -f name=funfit_auth)
+          if [ -n "$existing_container" ]; then
+            docker rm -f $existing_container
+          fi
+          
+          docker run -d --name funfit_auth -p 8080:8080 ${{ secrets.DOCKER_USERNAME }}/funfit_auth:latest
+          docker run --name rabbitmq -p 5672:5672 -p 15672:15672 -d rabbitmq:management
           EOF
-
-
+          
+          
 
 #      - name: deploy to EC2
 #        uses: appleboy/ssh-action@master
