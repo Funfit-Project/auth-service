@@ -56,19 +56,20 @@ jobs:
           username: ubuntu
           key: ${{ secrets.EC2_PRIVATE_KEY }}
           script: |
-            chmod 400 /home/ubuntu/funfit.pem
-            ssh -i "funfit.pem" ubuntu@${{ secrets.EC2_HOST }}
+            ssh -i /home/ubuntu/funfit.pem ubuntu@${{ secrets.EC2_HOST }} << 'EOF'
+          
+              sudo docker pull ${{ secrets.DOCKER_USERNAME }}/funfit_auth
             
-            sudo docker pull ${{ secrets.DOCKER_USERNAME }}/funfit_auth
+              existing_container=$(docker ps -a -q -f name=funfit_auth)
+              if [ -n "$existing_container" ]; then
+                docker rm -f $existing_container
+              fi
+              docker run -d --name funfit_auth -p 8080:8080 ${{ secrets.DOCKER_USERNAME }}/funfit_auth:latest
             
-            existing_container=$(docker ps -a -q -f name=funfit_auth)
-            if [ -n "$existing_container" ]; then
-            docker rm -f $existing_container
-            fi
-            docker run -d --name funfit_auth -p 8080:8080 ${{ secrets.DOCKER_USERNAME }}/funfit_auth:latest
+              existing_container=$(docker ps -a -q -f name=rabbitmq)
+              if [ -n "$existing_container" ]; then
+                docker rm -f $existing_container
+              fi
+              docker run -d --name rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:management
             
-            existing_container=$(docker ps -a -q -f name=rabbitmq)
-            if [ -n "$existing_container" ]; then
-            docker rm -f $existing_container
-            fi
-            docker run -d --name rabbitmq -p 5672:5672 -p 15672:15672 -d rabbitmq:management
+            EOF
