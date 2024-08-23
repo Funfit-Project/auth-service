@@ -61,114 +61,14 @@ jobs:
             
             sudo docker pull ${{ secrets.DOCKER_USERNAME }}/funfit_auth
             
-            existing_container=$(docker ps -q -f name=funfit_auth)
+            existing_container=$(docker ps -a -q -f name=funfit_auth)
             if [ -n "$existing_container" ]; then
             docker rm -f $existing_container
             fi
             docker run -d --name funfit_auth -p 8080:8080 ${{ secrets.DOCKER_USERNAME }}/funfit_auth:latest
             
-            existing_container=$(docker ps -q -f name=rabbitmq)
+            existing_container=$(docker ps -a -q -f name=rabbitmq)
             if [ -n "$existing_container" ]; then
             docker rm -f $existing_container
             fi
             docker run -d --name rabbitmq -p 5672:5672 -p 15672:15672 -d rabbitmq:management
-            
-
-#
-#
-#      - name: Deploy to Private EC2 via Bastion Host
-#        run: |
-#          # Public EC2로 접속하여 Private EC2로 SSH 터널링 후 Docker 컨테이너 실행
-#          ssh -A -o StrictHostKeyChecking=no -i ${{ secrets.EC2_PRIVATE_KEY }} ec2-user@${{ secrets.PUBLIC_EC2_HOST }} << EOF
-#            ssh -o StrictHostKeyChecking=no ec2-user@${{ secrets.EC2_HOST }} << 'INNER_EOF'
-#              # Docker pull 명령어로 이미지 가져오기
-#              sudo docker pull ${{ secrets.DOCKER_USERNAME }}/funfit_auth
-#              # 실행 중인 기존 컨테이너가 있다면 중지 및 삭제
-#              existing_container=$(docker ps -q -f name=funfit_auth)
-#              if [ -n "$existing_container" ]; then
-#                docker rm -f $existing_container
-#              fi
-#              docker run -d --name funfit_auth -p 8080:8080 ${{ secrets.DOCKER_USERNAME }}/funfit_auth:latest
-#              existing_rabbitmq=\$(sudo docker ps -q -f name=rabbitmq)
-#              if [ -z "\$existing_rabbitmq" ]; then
-#                sudo docker run --name rabbitmq -p 5672:5672 -p 15672:15672 -d rabbitmq:management
-#              fi
-#            INNER_EOF
-#          EOF
-          
-
-#      - name: Deploy to EC2 via Bastion
-#        uses: appleboy/ssh-action@master
-#        with:
-#          key: ${{ secrets.EC2_PRIVATE_KEY }}
-#          host: ${{ secrets.PUBLIC_EC2_HOST }}
-#          username: ubuntu
-#          script: |
-#            echo -e "Host private-ec2\n\tHostName ${{ secrets.EC2_HOST }}\n\tUser ubuntu\n\tProxyJump ubuntu@${{ secrets.BASTION_HOST }}" > ~/.ssh/config.ssh/config
-#
-#            ssh -F ~/.ssh/config private-ec2 << 'EOF'
-#              sudo docker pull ${{ secrets.DOCKER_USERNAME }}/funfit_auth
-#              existing_container=$(docker ps -q -f name=funfit_auth)
-#              if [ -n "$existing_container" ]; then
-#                sudo docker rm -f $existing_container
-#              fi
-#              docker run -d --name funfit_auth -p 8080:8080 ${{ secrets.DOCKER_USERNAME }}/funfit_auth:latest
-#              docker run --name rabbitmq -p 5672:5672 -p 15672:15672 -d rabbitmq:management
-#            EOF
-            
-
-#      - name: deploy to EC2
-#        uses: appleboy/ssh-action@master
-#        with:
-#          host: ${{ secrets.PUBLIC_EC2_HOST }}
-#          username: ubuntu
-#          key: ${{ secrets.EC2_PRIVATE_KEY }}
-#          script: |
-#            ssh -o StrictHostKeyChecking=no -i ${{ secrets.EC2_PRIVATE_KEY }} ubuntu@${{ secrets.EC2_HOST }} << 'EOF'
-#            sudo docker pull ${{ secrets.DOCKER_USERNAME }}/funfit_auth
-#
-#            existing_container=$(docker ps -q -f name=funfit_auth)
-#            if [ -n "$existing_container" ]; then
-#            docker rm -f $existing_container
-#            fi
-#
-#            docker run -d --name funfit_auth -p 8080:8080 ${{ secrets.DOCKER_USERNAME }}/funfit_auth:latest
-#            docker run --name rabbitmq -p 5672:5672 -p 15672:15672 -d rabbitmq:management
-#            EOF
-            
-
-#        with:
-#          host: ${{ secrets.PUBLIC_EC2_HOST }}
-#          username: ubuntu
-#          key: ${{ secrets.EC2_PRIVATE_KEY }}
-#          script: |
-#            ssh -o StrictHostKeyChecking=no -i ${{ secrets.EC2_PRIVATE_KEY }} ubuntu@${{ secrets.EC2_HOST }} << 'EOF'
-#            sudo docker pull ${{ secrets.DOCKER_USERNAME }}/funfit_auth
-#
-#            existing_container=$(docker ps -q -f name=funfit_auth)
-#            if [ -n "$existing_container" ]; then
-#            docker rm -f $existing_container
-#            fi
-#
-#            docker run -d --name funfit_auth -p 8080:8080 ${{ secrets.DOCKER_USERNAME }}/funfit_auth:latest
-#            docker run --name rabbitmq -p 5672:5672 -p 15672:15672 -d rabbitmq:management
-#            EOF
-
-
-
-#      - name: Deploy to EC2 via Bastion
-#        uses: appleboy/ssh-action@master
-#        with:
-#          host: ${{ secrets.EC2_HOST }}
-#          username: ubuntu
-#          key: ${{ secrets.EC2_PRIVATE_KEY }}
-#          script: |
-#            sudo docker pull ${{ secrets.DOCKER_USERNAME }}/funfit_auth
-#
-#            existing_container=$(docker ps -q -f name=funfit_auth)
-#            if [ -n "$existing_container" ]; then
-#            docker rm -f $existing_container
-#            fi
-#
-#            docker run -d --name funfit_auth -p 8080:8080 ${{ secrets.DOCKER_USERNAME }}/funfit_auth:latest
-#            docker run --name rabbitmq -p 5672:5672 -p 15672:15672 -d rabbitmq:management
