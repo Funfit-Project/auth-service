@@ -56,25 +56,18 @@ jobs:
           key: ${{ secrets.EC2_PRIVATE_KEY }} # SSH Private Key (PEM 형식으로 GitHub Secrets에 저장)
           port: 22
           script: |
-            # SSH 키 파일 생성 (Public EC2에서 사용할 키)
             echo "${{ secrets.EC2_PRIVATE_KEY }}" > ~/private_key.pem
             chmod 600 ~/private_key.pem
-            # Public EC2에서 Private EC2로 SSH 접속
             ssh -t -o StrictHostKeyChecking=no -i ~/private_key.pem ec2-user@${{ secrets.EC2_HOST }} << 'EOF'
-#            ssh -o StrictHostKeyChecking=no -i ~/private_key.pem ec2-user@${{ secrets.EC2_HOST }} << 'EOF'
-              # Docker pull 명령어로 이미지 가져오기
               sudo docker pull ${{ secrets.DOCKER_USERNAME }}/funfit_auth
-            
-              # 실행 중인 기존 컨테이너가 있다면 중지 및 삭제
+        
               existing_container=\$(sudo docker ps -q -f name=funfit_auth)
               if [ -n "\$existing_container" ]; then
                 sudo docker rm -f \$existing_container
               fi
             
-              # 새로운 funfit_auth 컨테이너 실행
               sudo docker run -d --name funfit_auth -p 8080:8080 ${{ secrets.DOCKER_USERNAME }}/funfit_auth
             
-              # RabbitMQ 컨테이너 실행 (이미 실행 중이 아니라면)
               existing_rabbitmq=\$(sudo docker ps -q -f name=rabbitmq)
               if [ -z "\$existing_rabbitmq" ]; then
                 sudo docker run --name rabbitmq -p 5672:5672 -p 15672:15672 -d rabbitmq:management
