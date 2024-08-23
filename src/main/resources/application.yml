@@ -6,7 +6,7 @@ eureka:
     register-with-eureka: true
     fetch-registry: true
     service-url:
-      defaultZone: http://${EC2_GATEWAY_PRIVATE_HOST}:8761/eureka
+      defaultZone: ${DISCOVERY_URL}
 
 spring:
   application:
@@ -49,4 +49,4 @@ springdoc:
 
 openapi:
   service:
-    url: http://${EC2_GATEWAY_PRIVATE_HOST}:8080
+    url: ${GATEWAY_URL}

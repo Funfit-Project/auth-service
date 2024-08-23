@@ -26,7 +26,8 @@ jobs:
         with:
           files: ./src/main/resources/application.yml
         env:
-          eureka.client.service-url.defaultZone: http://${{ secrets.EC2_GATEWAY_PRIVATE_HOST }}:8761/eureka
+          eureka.client.service-url.defaultZone: ${{ secrets.DISCOVERY_URL }}
+          openapi.service.url: ${{ secrets.GATEWAY_URL }}
           spring.datasource.url: ${{ secrets.DATASOURCE_URL }}
           spring.datasource.username: ${{ secrets.DATASOURCE_USERNAME }}
           spring.datasource.password: ${{ secrets.DATASOURCE_PASSWORD }}
