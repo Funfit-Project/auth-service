@@ -31,7 +31,6 @@ jobs:
           spring.datasource.password: ${{ secrets.DATASOURCE_PASSWORD }}
           spring.rabbitmq.host: ${{ secrets.EC2_HOST }}
           jwt.secret: ${{ secrets.JWT_SECRET }}
-          openapi.service.url: ${{ secrets.GATEWAY_URL }}
       - name: build with gradle
         run: |
           chmod +x ./gradlew
