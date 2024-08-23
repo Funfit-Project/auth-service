@@ -26,7 +26,6 @@ jobs:
         with:
           files: ./src/main/resources/application.yml
         env:
-          eureka.client.service-url.defaultZone: ${{ secrets.DISCOVERY_URL }}
           spring.datasource.url: ${{ secrets.DATASOURCE_URL }}
           spring.datasource.username: ${{ secrets.DATASOURCE_USERNAME }}
           spring.datasource.password: ${{ secrets.DATASOURCE_PASSWORD }}
@@ -55,6 +54,11 @@ jobs:
           key: ${{ secrets.EC2_PRIVATE_KEY }}
           script: |
             sudo docker pull ${{ secrets.DOCKER_USERNAME }}/funfit_auth
-            docker rm -f $(docker ps -qa)
-            docker run -d --name funfit_auth -p 80:8080 ${{ secrets.DOCKER_USERNAME }}/funfit_auth:latest
+            
+            existing_container=$(docker ps -q -f name=funfit_auth)
+            if [ -n "$existing_container" ]; then
+            docker rm -f $existing_container
+            fi
+            
+            docker run -d --name funfit_auth -p 8080:8080 ${{ secrets.DOCKER_USERNAME }}/funfit_auth:latest
             docker run --name rabbitmq -p 5672:5672 -p 15672:15672 -d rabbitmq:management
