@@ -31,7 +31,7 @@ jobs:
           spring.datasource.url: ${{ secrets.DATASOURCE_URL }}
           spring.datasource.username: ${{ secrets.DATASOURCE_USERNAME }}
           spring.datasource.password: ${{ secrets.DATASOURCE_PASSWORD }}
-          spring.rabbitmq.host: ${{ secrets.EC2_HOST }}
+          spring.rabbitmq.host: ${{ secrets.MQ_HOST }}
           jwt.secret: ${{ secrets.JWT_SECRET }}
 
       - name: build with gradle
