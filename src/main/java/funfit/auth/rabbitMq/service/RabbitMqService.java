@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Recover;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -19,6 +20,7 @@ public class RabbitMqService {
 
     @Value("${spring.rabbitmq.exchange}")
     private String exchange;
+    private final MessageRetryService messageRetryService;
 
     /**
      * PT 회원 회원가입 시 메시지 발행
@@ -49,5 +51,11 @@ public class RabbitMqService {
             log.error("MQ 메시지 발행 실패, retry 시도");
             throw e;
         }
+    }
+
+    @Recover
+    public void recoverPublishEditedUserEmail(Exception e, String email) {
+        log.error("publishEditedUserEmail MQ 메시지 발행 실패. 이메일 = {}", email);
+        messageRetryService.saveMessage(email);
     }
 }
