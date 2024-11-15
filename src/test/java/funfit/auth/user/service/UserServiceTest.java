@@ -1,11 +1,12 @@
-package funfit.auth.userInfo.service;
+package funfit.auth.user.service;
 
-import funfit.auth.auth.entity.Role;
-import funfit.auth.auth.entity.User;
-import funfit.auth.auth.repository.UserRepository;
+import funfit.auth.user.entity.Role;
+import funfit.auth.user.entity.User;
+import funfit.auth.user.repository.UserRepository;
+import funfit.auth.rabbitMq.service.MessageRetryService;
 import funfit.auth.rabbitMq.service.RabbitMqService;
-import funfit.auth.userInfo.dto.EditUserInfoRequest;
-import funfit.auth.userInfo.dto.ReadUserResponse;
+import funfit.auth.user.dto.EditUserInfoRequest;
+import funfit.auth.user.dto.ReadUserResponse;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -16,18 +17,18 @@ import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest
 @Transactional
-class UserInfoServiceTest {
+class UserServiceTest {
 
     @Autowired
     private UserRepository userRepository;
 
     @Autowired
-    private RabbitTemplate rabbitTemplate;
+    private MessageRetryService messageRetryService;
 
     @Test
     @DisplayName("사용자 정보 조회 성공")
     public void readUserInfoSuccess() {
-        UserInfoService userInfoService = new UserInfoService(userRepository, new StubRabbitMqService(rabbitTemplate));
+        UserService userService = new UserService(userRepository);
 
         // given
         String email = "user@naver.com";
@@ -35,7 +36,7 @@ class UserInfoServiceTest {
         User user = userRepository.findByEmail(email).get();
 
         // when
-        ReadUserResponse readUserResponse = userInfoService.readUserInfo("user@naver.com");
+        ReadUserResponse readUserResponse = userService.readUserInfo("user@naver.com");
 
         // then
         Assertions.assertThat(readUserResponse.getId()).isEqualTo(user.getId());
@@ -49,7 +50,7 @@ class UserInfoServiceTest {
     @Test
     @DisplayName("사용자 정보 수정 성공")
     public void editUserInfoSuccess() {
-        UserInfoService userInfoService = new UserInfoService(userRepository, new StubRabbitMqService(rabbitTemplate));
+        UserService userService = new UserService(userRepository);
 
         // given
         String email = "user@naver.com";
@@ -57,7 +58,7 @@ class UserInfoServiceTest {
 
         // when
         EditUserInfoRequest editUserInfoRequest = new EditUserInfoRequest("editedName");
-        ReadUserResponse readUserResponse = userInfoService.editUserInfo(editUserInfoRequest, email);
+        ReadUserResponse readUserResponse = userService.editUserInfo(editUserInfoRequest, email);
 
         // then
         User user = userRepository.findByEmail(email).get();
@@ -73,7 +74,7 @@ class UserInfoServiceTest {
     class StubRabbitMqService extends RabbitMqService {
 
         public StubRabbitMqService(RabbitTemplate rabbitTemplate) {
-            super(rabbitTemplate);
+            super(rabbitTemplate, messageRetryService);
         }
 
         @Override

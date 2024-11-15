@@ -1,4 +1,4 @@
-package funfit.auth.auth.entity;
+package funfit.auth.user.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;

@@ -1,6 +1,6 @@
-package funfit.auth.userInfo.dto;
+package funfit.auth.user.dto;
 
-import funfit.auth.auth.entity.User;
+import funfit.auth.user.entity.User;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

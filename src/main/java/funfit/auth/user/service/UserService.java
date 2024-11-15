@@ -1,11 +1,11 @@
-package funfit.auth.userInfo.service;
+package funfit.auth.user.service;
 
-import funfit.auth.auth.entity.User;
-import funfit.auth.auth.repository.UserRepository;
+import funfit.auth.user.entity.User;
+import funfit.auth.user.repository.UserRepository;
 import funfit.auth.exception.ErrorCode;
 import funfit.auth.exception.customException.BusinessException;
-import funfit.auth.userInfo.dto.EditUserInfoRequest;
-import funfit.auth.userInfo.dto.ReadUserResponse;
+import funfit.auth.user.dto.EditUserInfoRequest;
+import funfit.auth.user.dto.ReadUserResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,7 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 @Transactional
-public class UserInfoService {
+public class UserService {
 
     private final UserRepository userRepository;
 

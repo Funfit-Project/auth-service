@@ -1,8 +1,8 @@
 package funfit.auth.rabbitMq.service;
 
-import funfit.auth.auth.entity.Role;
-import funfit.auth.auth.entity.User;
-import funfit.auth.auth.repository.UserRepository;
+import funfit.auth.user.entity.Role;
+import funfit.auth.user.entity.User;
+import funfit.auth.user.repository.UserRepository;
 import funfit.auth.exception.ErrorCode;
 import funfit.auth.exception.customException.BusinessException;
 import funfit.auth.api.dto.ResponseUserDtoForCommunity;

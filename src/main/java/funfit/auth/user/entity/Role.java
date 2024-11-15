@@ -1,4 +1,4 @@
-package funfit.auth.auth.entity;
+package funfit.auth.user.entity;
 
 import funfit.auth.exception.ErrorCode;
 import funfit.auth.exception.customException.BusinessException;

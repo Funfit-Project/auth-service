@@ -1,16 +1,18 @@
-package funfit.auth.auth.service;
+package funfit.auth.join.service;
 
 import funfit.auth.exception.ErrorCode;
 import funfit.auth.exception.customException.BusinessException;
-import funfit.auth.auth.dto.JoinRequest;
-import funfit.auth.auth.dto.JoinResponse;
-import funfit.auth.auth.dto.LoginRequest;
-import funfit.auth.auth.dto.LoginResponse;
-import funfit.auth.auth.entity.Role;
-import funfit.auth.auth.entity.User;
-import funfit.auth.auth.repository.UserRepository;
+import funfit.auth.user.dto.JoinRequest;
+import funfit.auth.user.dto.JoinResponse;
+import funfit.auth.user.dto.LoginRequest;
+import funfit.auth.user.dto.LoginResponse;
+import funfit.auth.user.entity.Role;
+import funfit.auth.user.entity.User;
+import funfit.auth.user.repository.UserRepository;
 import funfit.auth.rabbitMq.dto.CreateNewMemberPubDto;
+import funfit.auth.rabbitMq.service.MessageRetryService;
 import funfit.auth.rabbitMq.service.RabbitMqService;
+import funfit.auth.user.service.JoinService;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -24,21 +26,22 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @Transactional
-class AuthServiceTest {
+class JoinServiceTest {
 
     @Autowired private UserRepository userRepository;
     @Autowired private RabbitTemplate rabbitTemplate;
-    private AuthService authService;
+    @Autowired private MessageRetryService messageRetryService;
+    private JoinService joinService;
 
     @BeforeEach
     void setup() {
-        authService = new AuthService(userRepository, new RabbitMqServiceStub(rabbitTemplate));
+        joinService = new JoinService(userRepository, new RabbitMqServiceStub(rabbitTemplate));
     }
 
     class RabbitMqServiceStub extends RabbitMqService {
 
         public RabbitMqServiceStub(RabbitTemplate rabbitTemplate) {
-            super(rabbitTemplate);
+            super(rabbitTemplate, messageRetryService);
         }
 
         @Override
@@ -59,7 +62,7 @@ class AuthServiceTest {
                 .build();
 
         // when
-        JoinResponse joinResponse = authService.join(joinRequest);
+        JoinResponse joinResponse = joinService.join(joinRequest);
 
         // then
         Assertions.assertThat(joinResponse.getEmail()).isEqualTo("trainer@naver.com");
@@ -89,7 +92,7 @@ class AuthServiceTest {
                 .registrationCount(10)
                 .build();
 
-        JoinResponse joinResponse = authService.join(joinRequest);
+        JoinResponse joinResponse = joinService.join(joinRequest);
 
         // then
         Assertions.assertThat(joinResponse.getEmail()).isEqualTo("member@naver.com");
@@ -135,13 +138,13 @@ class AuthServiceTest {
                 .build();
 
         // then
-        Assertions.assertThat(assertThrows(BusinessException.class, () -> authService.join(joinRequestExcludeUserCode)).getErrorCode())
+        Assertions.assertThat(assertThrows(BusinessException.class, () -> joinService.join(joinRequestExcludeUserCode)).getErrorCode())
                 .isEqualTo(ErrorCode.REQUIRED_USER_CODE);
 
-        Assertions.assertThat(assertThrows(BusinessException.class, () -> authService.join(joinRequestExcludeCenterName)).getErrorCode())
+        Assertions.assertThat(assertThrows(BusinessException.class, () -> joinService.join(joinRequestExcludeCenterName)).getErrorCode())
                 .isEqualTo(ErrorCode.REQUIRED_CENTER_NAME);
 
-        Assertions.assertThat(assertThrows(BusinessException.class, () -> authService.join(joinRequestExcludeRegistrationCount)).getErrorCode())
+        Assertions.assertThat(assertThrows(BusinessException.class, () -> joinService.join(joinRequestExcludeRegistrationCount)).getErrorCode())
                 .isEqualTo(ErrorCode.REQUIRED_REGISTRATION_COUNT);
     }
 
@@ -161,7 +164,7 @@ class AuthServiceTest {
                 .build();
 
         // then
-        Assertions.assertThat(assertThrows(BusinessException.class, () -> authService.join(joinRequest)).getErrorCode())
+        Assertions.assertThat(assertThrows(BusinessException.class, () -> joinService.join(joinRequest)).getErrorCode())
                 .isEqualTo(ErrorCode.DUPLICATED_EMAIL);
     }
 
@@ -173,7 +176,7 @@ class AuthServiceTest {
 
         // when
         LoginRequest loginRequest = new LoginRequest("user@naver.com", "1234");
-        LoginResponse loginResponse = authService.login(loginRequest);
+        LoginResponse loginResponse = joinService.login(loginRequest);
 
         // then
         Assertions.assertThat(loginResponse).isNotNull();
@@ -189,7 +192,7 @@ class AuthServiceTest {
 
         // then
         BusinessException exception = assertThrows(BusinessException.class, () -> {
-            authService.login(loginRequest);
+            joinService.login(loginRequest);
         });
         Assertions.assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.NOT_FOUND_EMAIL);
     }
@@ -203,7 +206,7 @@ class AuthServiceTest {
 
         // then
         BusinessException exception = assertThrows(BusinessException.class, () -> {
-            authService.login(loginRequest);
+            joinService.login(loginRequest);
         });
         Assertions.assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.INVALID_PASSWORD);
     }

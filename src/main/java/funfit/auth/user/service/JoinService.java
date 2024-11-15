@@ -1,11 +1,14 @@
-package funfit.auth.auth.service;
+package funfit.auth.user.service;
 
 import funfit.auth.exception.ErrorCode;
 import funfit.auth.exception.customException.BusinessException;
-import funfit.auth.auth.dto.*;
-import funfit.auth.auth.entity.Role;
-import funfit.auth.auth.entity.User;
-import funfit.auth.auth.repository.UserRepository;
+import funfit.auth.user.dto.JoinRequest;
+import funfit.auth.user.dto.JoinResponse;
+import funfit.auth.user.dto.LoginRequest;
+import funfit.auth.user.dto.LoginResponse;
+import funfit.auth.user.entity.Role;
+import funfit.auth.user.entity.User;
+import funfit.auth.user.repository.UserRepository;
 import funfit.auth.rabbitMq.dto.CreateNewMemberPubDto;
 import funfit.auth.rabbitMq.service.RabbitMqService;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional
 @RequiredArgsConstructor
-public class AuthService {
+public class JoinService {
 
     private final UserRepository userRepository;
     private final RabbitMqService rabbitMqService;
