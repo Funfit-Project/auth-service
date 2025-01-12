@@ -2,6 +2,7 @@ package funfit.auth.user.service;
 
 import funfit.auth.exception.ErrorCode;
 import funfit.auth.exception.customException.BusinessException;
+import funfit.auth.kafka.KafkaProducerService;
 import funfit.auth.user.dto.JoinRequest;
 import funfit.auth.user.dto.JoinResponse;
 import funfit.auth.user.dto.LoginRequest;
@@ -9,8 +10,7 @@ import funfit.auth.user.dto.LoginResponse;
 import funfit.auth.user.entity.Role;
 import funfit.auth.user.entity.User;
 import funfit.auth.user.repository.UserRepository;
-import funfit.auth.rabbitMq.dto.CreateNewMemberPubDto;
-import funfit.auth.rabbitMq.service.RabbitMqService;
+import funfit.auth.kafka.PtMemberJoinedDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,7 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class JoinService {
 
     private final UserRepository userRepository;
-    private final RabbitMqService rabbitMqService;
+    private final KafkaProducerService kafkaProducerService;
 
     public JoinResponse join(JoinRequest joinRequest) {
         validateDuplicatedEmail(joinRequest.getEmail());
@@ -34,7 +34,7 @@ public class JoinService {
             validateRequiredData(joinRequest);
             User trainer = validateUserCode(joinRequest.getUserCode());
             userRepository.save(user);
-            rabbitMqService.publishCreateNewMember(new CreateNewMemberPubDto(user.getEmail(), trainer.getEmail(), joinRequest.getCenterName(), joinRequest.getRegistrationCount()));
+            kafkaProducerService.publishPtMemberJoined(new PtMemberJoinedDto(user.getEmail(), trainer.getEmail(), joinRequest.getCenterName(), joinRequest.getRegistrationCount()));
             return new JoinResponse(user.getEmail(), user.getName(), user.getRole().getName(), trainer.getName(), joinRequest.getCenterName(), joinRequest.getRegistrationCount());
         } else {
             userRepository.save(user);

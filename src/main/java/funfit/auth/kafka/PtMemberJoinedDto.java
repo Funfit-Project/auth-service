@@ -1,4 +1,4 @@
-package funfit.auth.rabbitMq.dto;
+package funfit.auth.kafka;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -7,7 +7,7 @@ import lombok.ToString;
 @AllArgsConstructor
 @ToString
 @Getter
-public class CreateNewMemberPubDto {
+public class PtMemberJoinedDto {
 
     private String memberEmail;
     private String trainerEmail;
