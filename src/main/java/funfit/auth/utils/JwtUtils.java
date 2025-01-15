@@ -12,6 +12,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
+import java.time.Duration;
 import java.time.Instant;
 import java.util.Date;
 
@@ -37,7 +38,7 @@ public class JwtUtils {
         return Jwts.builder()
                 .setClaims(claims)
                 .setIssuedAt(Date.from(Instant.now()))
-                .setExpiration(Date.from(Instant.now().plusSeconds(60 * 60))) // 만료: 1시간
+                .setExpiration(Date.from(Instant.now().plus(Duration.ofMinutes(30)))) // 만료: 30분
                 .signWith(SignatureAlgorithm.HS256, signingKey)
                 .compact();
     }
@@ -46,7 +47,7 @@ public class JwtUtils {
         return Jwts.builder()
                 .setClaims(claims)
                 .setIssuedAt(Date.from(Instant.now()))
-                .setExpiration(Date.from(Instant.now().plusSeconds(60 * 60 * 24))) // 만료: 24시간
+                .setExpiration(Date.from(Instant.now().plus(Duration.ofDays(30)))) // 만료: 30일
                 .signWith(SignatureAlgorithm.HS256, signingKey)
                 .compact();
     }
