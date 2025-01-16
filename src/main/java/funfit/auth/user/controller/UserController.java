@@ -2,7 +2,6 @@ package funfit.auth.user.controller;
 
 import funfit.auth.kafka.KafkaProducerService;
 import funfit.auth.user.dto.*;
-import funfit.auth.user.service.JoinService;
 import funfit.auth.utils.JwtUtils;
 import funfit.auth.responseDto.SuccessResponse;
 import funfit.auth.user.service.UserService;
@@ -19,24 +18,8 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
 
     private final JwtUtils jwtUtils;
-    private final JoinService joinService;
     private final UserService userService;
     private final KafkaProducerService kafkaProducerService;
-
-    @PostMapping("/join")
-    public ResponseEntity join(@RequestBody JoinRequest joinRequest) {
-        JoinResponse joinResponse = joinService.join(joinRequest);
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(new SuccessResponse("사용자 회원가입 성공", joinResponse));
-    }
-
-    @PostMapping("/login")
-    public ResponseEntity login(@RequestBody LoginRequest loginRequest) {
-        LoginResponse loginResponse = joinService.login(loginRequest);
-        JwtDto jwtDto = jwtUtils.generateJwt(loginResponse.getEmail());
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(new SuccessResponse("사용자 로그인 성공", jwtDto));
-    }
 
     @GetMapping("/mypage")
     public ResponseEntity readUserInfo(HttpServletRequest request) {

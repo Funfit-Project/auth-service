@@ -1,6 +1,6 @@
 package funfit.auth.api;
 
-import funfit.auth.user.entity.User;
+import funfit.auth.entity.User;
 import funfit.auth.user.repository.UserRepository;
 import funfit.auth.exception.ErrorCode;
 import funfit.auth.exception.customException.BusinessException;

@@ -1,4 +1,4 @@
-package funfit.auth.user.dto;
+package funfit.auth.auth.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;

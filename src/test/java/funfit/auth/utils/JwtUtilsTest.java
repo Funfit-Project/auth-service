@@ -1,6 +1,6 @@
 package funfit.auth.utils;
 
-import funfit.auth.user.dto.JwtDto;
+import funfit.auth.auth.dto.JwtDto;
 import funfit.auth.exception.ErrorCode;
 import funfit.auth.exception.customException.CustomJwtException;
 import org.assertj.core.api.Assertions;

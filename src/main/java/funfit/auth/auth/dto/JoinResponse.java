@@ -1,4 +1,4 @@
-package funfit.auth.user.dto;
+package funfit.auth.auth.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
