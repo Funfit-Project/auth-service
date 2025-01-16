@@ -1,16 +1,18 @@
-package funfit.auth.user.service;
+package funfit.auth.auth;
 
+import funfit.auth.auth.dto.JoinRequest;
+import funfit.auth.auth.dto.JoinResponse;
+import funfit.auth.auth.dto.JwtDto;
+import funfit.auth.auth.dto.LoginRequest;
 import funfit.auth.exception.ErrorCode;
 import funfit.auth.exception.customException.BusinessException;
 import funfit.auth.kafka.KafkaProducerService;
-import funfit.auth.user.dto.JoinRequest;
-import funfit.auth.user.dto.JoinResponse;
-import funfit.auth.user.dto.LoginRequest;
-import funfit.auth.user.dto.LoginResponse;
-import funfit.auth.user.entity.Role;
-import funfit.auth.user.entity.User;
+import funfit.auth.entity.Role;
+import funfit.auth.entity.User;
 import funfit.auth.user.repository.UserRepository;
 import funfit.auth.kafka.PtMemberJoinedDto;
+import funfit.auth.utils.JwtUtils;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,10 +20,12 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional
 @RequiredArgsConstructor
-public class JoinService {
+public class AuthService {
 
     private final UserRepository userRepository;
     private final KafkaProducerService kafkaProducerService;
+    private final JwtUtils jwtUtils;
+    private final TokenRepository tokenRepository;
 
     public JoinResponse join(JoinRequest joinRequest) {
         validateDuplicatedEmail(joinRequest.getEmail());
@@ -65,9 +69,20 @@ public class JoinService {
                 .orElseThrow(() -> new BusinessException(ErrorCode.INVALID_USER_CODE));
     }
 
-    public LoginResponse login(LoginRequest loginRequest) {
+    public JwtDto login(LoginRequest loginRequest) {
         validateEmailPassword(loginRequest);
-        return new LoginResponse(loginRequest.getEmail());
+        JwtDto jwtDto = jwtUtils.generateJwt(loginRequest.getEmail());
+        tokenRepository.saveRefreshToken(jwtDto.getRefreshToken(), null);
+        return jwtDto;
+    }
+
+    public JwtDto renewTokens(HttpServletRequest request) {
+        String refreshToken = jwtUtils.getJwtFromHeader(request);
+        tokenRepository.validateRefreshToken(refreshToken);
+
+        JwtDto jwtDto = jwtUtils.generateJwt(jwtUtils.getEmailFromHeader(request));
+        tokenRepository.saveRefreshToken(jwtDto.getRefreshToken(), refreshToken);
+        return jwtDto;
     }
 
     private void validateEmailPassword(LoginRequest loginRequest) {
@@ -80,5 +95,10 @@ public class JoinService {
     private User findUser(String email) {
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_EMAIL));
+    }
+
+    public void logout(HttpServletRequest request) {
+        String refreshToken = jwtUtils.getJwtFromHeader(request);
+        tokenRepository.logout(refreshToken);
     }
 }

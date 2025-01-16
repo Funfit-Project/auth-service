@@ -1,6 +1,6 @@
 package funfit.auth.utils;
 
-import funfit.auth.user.dto.JwtDto;
+import funfit.auth.auth.dto.JwtDto;
 import funfit.auth.exception.ErrorCode;
 import funfit.auth.exception.customException.CustomJwtException;
 import io.jsonwebtoken.*;
@@ -63,7 +63,7 @@ public class JwtUtils {
         }
     }
 
-    private String getJwtFromHeader(HttpServletRequest request) {
+    public String getJwtFromHeader(HttpServletRequest request) {
         String header = request.getHeader(HttpHeaders.AUTHORIZATION);
         if (header != null && header.startsWith("Bearer ")) {
             return header.split(" ")[1];
