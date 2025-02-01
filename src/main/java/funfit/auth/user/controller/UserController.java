@@ -1,6 +1,5 @@
 package funfit.auth.user.controller;
 
-import funfit.auth.kafka.KafkaProducerService;
 import funfit.auth.user.dto.*;
 import funfit.auth.utils.JwtUtils;
 import funfit.auth.responseDto.SuccessResponse;
@@ -19,7 +18,6 @@ public class UserController {
 
     private final JwtUtils jwtUtils;
     private final UserService userService;
-    private final KafkaProducerService kafkaProducerService;
 
     @GetMapping("/mypage")
     public ResponseEntity readUserInfo(HttpServletRequest request) {
@@ -29,9 +27,8 @@ public class UserController {
     }
 
     @PutMapping("/edit")
-    public ResponseEntity editUserInfo(@RequestBody EditUserInfoRequest dto, HttpServletRequest request) {
-        ReadUserResponse readUserResponse = userService.editUserInfo(dto, jwtUtils.getEmailFromHeader(request));
-        kafkaProducerService.publishUserInfoUpdated(readUserResponse.getEmail());
+    public ResponseEntity editUserInfo(@RequestBody EditUserInfoRequest editUserInfoRequest, HttpServletRequest request) throws InterruptedException {
+        ReadUserResponse readUserResponse = userService.editUserInfo(editUserInfoRequest, jwtUtils.getEmailFromHeader(request));
         return ResponseEntity.status(HttpStatus.OK)
                 .body(new SuccessResponse("회원 정보 수정 성공", readUserResponse));
     }

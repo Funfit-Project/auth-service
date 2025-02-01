@@ -1,14 +1,17 @@
 package funfit.auth.auth;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import funfit.auth.auth.dto.JoinRequest;
 import funfit.auth.auth.dto.JoinResponse;
 import funfit.auth.auth.dto.JwtDto;
 import funfit.auth.auth.dto.LoginRequest;
 import funfit.auth.exception.ErrorCode;
 import funfit.auth.exception.customException.BusinessException;
-import funfit.auth.kafka.KafkaProducerService;
 import funfit.auth.entity.Role;
 import funfit.auth.entity.User;
+import funfit.auth.outbox.Outbox;
+import funfit.auth.outbox.OutboxRepository;
 import funfit.auth.user.repository.UserRepository;
 import funfit.auth.kafka.PtMemberJoinedDto;
 import funfit.auth.utils.JwtUtils;
@@ -23,11 +26,12 @@ import org.springframework.transaction.annotation.Transactional;
 public class AuthService {
 
     private final UserRepository userRepository;
-    private final KafkaProducerService kafkaProducerService;
     private final JwtUtils jwtUtils;
     private final TokenRepository tokenRepository;
+    private final OutboxRepository outboxRepository;
+    private final ObjectMapper objectMapper;
 
-    public JoinResponse join(JoinRequest joinRequest) {
+    public JoinResponse join(JoinRequest joinRequest) throws JsonProcessingException {
         validateDuplicatedEmail(joinRequest.getEmail());
         Role role = Role.find(joinRequest.getRole());
 
@@ -38,7 +42,10 @@ public class AuthService {
             validateRequiredData(joinRequest);
             User trainer = validateUserCode(joinRequest.getUserCode());
             userRepository.save(user);
-            kafkaProducerService.publishPtMemberJoined(new PtMemberJoinedDto(user.getEmail(), trainer.getEmail(), joinRequest.getCenterName(), joinRequest.getRegistrationCount()));
+
+            PtMemberJoinedDto ptMemberJoinedDto = new PtMemberJoinedDto(user.getEmail(), trainer.getEmail(), joinRequest.getCenterName(), joinRequest.getRegistrationCount());
+            Outbox outbox = Outbox.create(objectMapper.writeValueAsString(ptMemberJoinedDto), "pt-member-joined");
+            outboxRepository.save(outbox);
             return new JoinResponse(user.getEmail(), user.getName(), user.getRole().getName(), trainer.getName(), joinRequest.getCenterName(), joinRequest.getRegistrationCount());
         } else {
             userRepository.save(user);

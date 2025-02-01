@@ -1,5 +1,6 @@
 package funfit.auth.auth;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import funfit.auth.responseDto.SuccessResponse;
 import funfit.auth.auth.dto.JoinRequest;
 import funfit.auth.auth.dto.JoinResponse;
@@ -21,7 +22,7 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/join")
-    public ResponseEntity join(@RequestBody JoinRequest joinRequest) {
+    public ResponseEntity join(@RequestBody JoinRequest joinRequest) throws JsonProcessingException {
         JoinResponse joinResponse = authService.join(joinRequest);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(new SuccessResponse("사용자 회원가입 성공", joinResponse));
