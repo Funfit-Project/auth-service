@@ -10,23 +10,26 @@ import funfit.auth.user.dto.EditUserInfoRequest;
 import funfit.auth.user.dto.ReadUserResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
-@Transactional
 public class UserService {
 
     private final UserRepository userRepository;
     private final OutboxRepository outboxRepository;
+    private final RedisTemplate<String, String> redisTemplate;
 
+    @Transactional
     public ReadUserResponse readUserInfo(String email) {
         User user = findUser(email);
         return new ReadUserResponse(user);
     }
 
+    @Transactional
     public ReadUserResponse editUserInfo(EditUserInfoRequest dto, String email) {
         User user = findUser(email);
         user.editUserInfo(dto.getName());
