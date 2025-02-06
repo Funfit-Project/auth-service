@@ -1,6 +1,7 @@
 package funfit.auth.user.service;
 
 import funfit.auth.entity.User;
+import funfit.auth.kafka.dto.DeductAndCompensatePoints;
 import funfit.auth.outbox.Outbox;
 import funfit.auth.outbox.OutboxRepository;
 import funfit.auth.user.repository.UserRepository;
@@ -43,5 +44,25 @@ public class UserService {
     private User findUser(String email) {
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_EMAIL));
+    }
+
+    @Transactional
+    public boolean deductPoints(DeductAndCompensatePoints deductAndCompensatePoints) {
+        User user = userRepository.findByEmail(deductAndCompensatePoints.getEmail())
+                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_USER));
+        if (user.getPoint() < 3000) {
+            return false;
+        }
+        user.deductPoints();
+        redisTemplate.opsForSet().add("deductPoints", deductAndCompensatePoints.getUuid());
+        return true;
+    }
+
+    public void compensatePoints(DeductAndCompensatePoints dto) {
+        if (redisTemplate.opsForSet().isMember("deductPoints", dto.getUuid())) {
+            User user = userRepository.findByEmail(dto.getEmail())
+                    .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_USER));
+            user.compensatePoints();
+        }
     }
 }

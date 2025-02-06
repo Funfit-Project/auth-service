@@ -31,6 +31,7 @@ public class User {
     private String phoneNumber;
 
     private String userCode;
+    private int point;
 
     public static User create(String email, String password, String name, Role role, String phoneNumber) {
         User user = new User();
@@ -42,6 +43,7 @@ public class User {
             user.userCode = createUserCode();
         }
         user.phoneNumber = phoneNumber;
+        user.point = 3000;
         return user;
     }
 
@@ -52,5 +54,13 @@ public class User {
 
     public void editUserInfo(String name) {
         this.name = name;
+    }
+
+    public void deductPoints() {
+        point -= 3000;
+    }
+
+    public void compensatePoints() {
+        point += 3000;
     }
 }
